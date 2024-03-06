@@ -1,0 +1,15 @@
+.custom-container {
+    border: 1px solid dodgerblue;
+    max-width: 600px;
+    /*margin-left: 50px;
+    /*max-height: 400px; */
+}
+
+.custom-form-control {
+    max-width: 600px;
+}
+
+.text-center {
+    text-align: center;
+    color: dodgerblue;
+}
