@@ -5,9 +5,25 @@ import Swal from 'sweetalert2'
 
 export default function TaskItem(props) {
     const [taskDetails, setTaskDetails] = useState([])
+    
+
+    const [formData, setFormData] = useState({
+        title: props.task.title,
+        description: props.task.description,
+        status: props.task.status,
+        priority: props.task.priority
+    })
+
     const [show, setShow] = useState(false);
+    const [editShow, setEditShow] = useState(false)
 
     const handleClose = () => setShow(false);
+    const handleEditClose = () => setEditShow(false)
+
+    const handleChange = (e) => {
+        const {name, value} = e.target
+        setFormData({...formData, [name] : value})
+    }
 
     const handleDelete = () => {
         Swal.fire({
@@ -43,42 +59,32 @@ export default function TaskItem(props) {
           });
     }
 
-    const handleEdit = async () => {
-        const { value: newStatus } = await Swal.fire({
-            title: `Update the status of ${props.task.title}`,
-            input: 'text',
-            inputLabel: 'New status',
-            inputPlaceholder: 'Enter new status',
-            showCancelButton: true, 
-          });
-          try {
-            if (newStatus.trim()) {
-                const formData = {
-                            status: newStatus
-                        }
-                        try {
-                            const response = await axios.put(`${props.url}/${props.task._id}`, formData)
-                            const result = response.data
-                                props.editTask(result)
-                                //props.showTaskDetails(result)
-                                Swal.fire({
-                                    title: "Updated!",
-                                    text: `Your task ${result.title}'s status has been successfully updated`,
-                                    icon: "success"
-                                });
-                        } catch(err) {
-                            console.log(err)
-                                Swal.fire({
-                                    title: "Oops!",
-                                    text: `${err.message}`,
-                                    icon: "error"
-                                  });
-                        }
-              } else {
-                Swal.fire('Cancelled', 'No status provided', 'error');
-              }
-          } catch(err) {
-          }
+    const handleEdit = async (e) => {
+        e.preventDefault()
+        try {
+            try {
+                const response = await axios.put(`${props.url}/${props.task._id}`, formData)
+                const result = response.data
+                props.editTask(result)
+                Swal.fire({
+                    title: "Updated!",
+                    text: `Your task ${result.title}'s status has been successfully updated`,
+                    icon: "success"
+                });
+                setEditShow(false)
+            } catch(err) {
+                console.log(err)
+                    Swal.fire({
+                        title: "Oops!",
+                        text: `${err.message}`,
+                        icon: "error"
+                    });
+            }
+        } catch(err) {
+            console.log(err)
+        }
+
+
     }
 
     const handleShowMore = async () => {
@@ -86,6 +92,7 @@ export default function TaskItem(props) {
         try {
             const response = await axios.get(`${props.url}/${props.task._id}`)
             const result = response.data
+            console.log(result)
                 const {title, description, status, priority} = result
                 //setTask(title)
                 setTaskDetails(Object.entries({title, description, status, priority}))
@@ -99,7 +106,7 @@ export default function TaskItem(props) {
     return (
         <li className="list-group-item" key={props.task._id}><span>{props.task.title}</span>
         <div>
-            <button onClick={handleEdit} className="btn btn-primary btn-sm mr-2">Edit</button>
+            <button onClick={()=>{setEditShow(true)}} className="btn btn-primary btn-sm mr-2">Edit</button>
             <button onClick={handleDelete} className="btn btn-danger btn-sm mr-2">Delete</button>
             <Button onClick={handleShowMore} variant="info" size="sm">Show Details</Button></div>
             
@@ -111,17 +118,124 @@ export default function TaskItem(props) {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="container">
-                                    <p>{taskDetails.map(([key, value],i) => {
-                                        return  (<span key={i}>
-                                            <strong>{key[0].toUpperCase() + key.slice(1).toLowerCase()} : </strong>{value}<br/>
-                                        </span>)
-                                    })}</p></div>
+                        <p>{taskDetails.map(([key, value],i) => {
+                            return  (<span key={i}>
+                                    <strong>{key[0].toUpperCase() + key.slice(1).toLowerCase()} : </strong>{value}<br/>
+                                    </span>)
+                        })}</p></div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" onClick={handleClose}>
                         Close
                     </Button>
                 </Modal.Footer>
+            </Modal>
+
+            {/*edit */}
+            <Modal show={editShow} onHide={handleEditClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit the {props.task.title} task</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <form className="container custom-container" onSubmit={handleEdit}>
+                <div className="mb-3">
+                    <label htmlFor="name" className="form-label">Enter Title</label>
+                <input type="text"
+                        className="form-control custom-form-control"
+                        id="name"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="description" className="form-label">Enter Description:</label>
+                    <textarea 
+                    className="form-control"
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    ></textarea>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="status" className="form-label">Select Status:</label>
+                        <div className="form-check">
+                            <input type="radio"
+                                className="form-check-input"
+                                value='Pending'
+                                id="Pending"
+                                name="status"
+                                checked={formData.status === 'Pending'}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor="Pending">Pending</label>
+                        </div>
+                        <div className="form-check">
+                            <input type="radio"
+                                className="form-check-input"
+                                value='In Progress'
+                                id="In Progress"
+                                name="status"
+                                checked={formData.status === 'In Progress'}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor="In Progress">In Progress</label>
+                        </div>
+                        <div className="form-check">
+                            <input type="radio"
+                                className="form-check-input"
+                                value='Completed'
+                                id="Completed"
+                                name="status"
+                                checked={formData.status === 'Completed'}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor="Completed">Completed</label>
+                        </div>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="priority" className="form-label">Select Priority:</label>
+                        <div className="form-check">
+                            <input type="radio"
+                                className="form-check-input"
+                                value='Low'
+                                id="Low"
+                                name="priority"
+                                checked={formData.priority === 'Low'}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor="Low">Low</label>
+                        </div>
+                        <div className="form-check">
+                            <input type="radio"
+                                className="form-check-input"
+                                value='Medium'
+                                id="Medium"
+                                name="priority"
+                                checked={formData.priority === 'Medium'}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor="Medium">Medium</label>
+                        </div>
+                        <div className="form-check">
+                            <input type="radio"
+                                className="form-check-input"
+                                value='High'
+                                id="High"
+                                name="priority"
+                                checked={formData.priority === 'High'}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor="High">High</label>
+                        </div>
+                </div>
+                <div className="mb-3">
+                    <input type="submit" className="btn btn-primary"/>
+                </div>
+            </form>
+        
+                </Modal.Body>
             </Modal>
         </li>
         

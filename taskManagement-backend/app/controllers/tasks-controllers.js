@@ -41,10 +41,10 @@ tasksCtrl.destroy = async (req,res) => {
 }
 
 tasksCtrl.update = async (req,res) => {
-    // const errors = validationResult(req)
-    // if(!errors.isEmpty()) {
-    //     return res.status(400).json({errors: errors.array()})
-    // }
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+    }
     const id = req.params.id
     const {body} = req
     try {
@@ -55,17 +55,6 @@ tasksCtrl.update = async (req,res) => {
         res.status(500).json({notice: 'Internal Server Error'})
     }
 }
-
-//app.get('/api/tasks/:id',(req,res) => {
-    //     const id = req.params.id
-    //     Task.findById(id)
-    //         .then((task) => {
-    //             res.json(task)
-    //         })
-    //         .catch((err) => {
-    //             res.json(err)
-    //         })
-    // })
 
 tasksCtrl.listOneTask = async (req,res) => {
     const id = req.params.id
