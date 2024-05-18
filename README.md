@@ -11,3 +11,10 @@ Enhanced user experience with SweetAlert2 popups for intuitive interactions.
 
 <h1>Snapshots</h1>
 <img src="src/images/Screenshot (24).png"/>
+<img src="src/images/Screenshot (25).png"/>
+<img src="src/images/Screenshot (26).png"/>
+<img src="src/images/Screenshot (27).png"/>
+<img src="src/images/Screenshot (28).png"/>
+<img src="src/images/Screenshot (29).png"/>
+<img src="src/images/Screenshot (30).png"/>
+<img src="src/images/Screenshot (31).png"/>
