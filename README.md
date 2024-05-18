@@ -9,5 +9,5 @@ Employed ReactJs with Bootstrap for UI, and NodeJs with Expressfor backend, and 
 Incorporated client-side and server-side validations, utilizing Express-validator for server-side validation.\
 Enhanced user experience with SweetAlert2 popups for intuitive interactions.
 
-##Snapshots
-<h1>Heloo</h1>
+<h1>Snapshots</h1>
+<img src="src/images/Screenshot (24).png"/>
